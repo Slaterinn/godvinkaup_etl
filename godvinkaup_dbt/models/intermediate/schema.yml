@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: wine_food_pairings
+    description: >
+      Mapping of food pairing descriptions to wines based on the encoded food_pairing string in dim_wines.
+    columns:
+      - name: id_wine
+        description: Unique wine identifier.
+        tests:
+          - not_null
+          - unique
+      - name: food_pairings
+        description: Semicolon-separated list of human-readable food pairings.

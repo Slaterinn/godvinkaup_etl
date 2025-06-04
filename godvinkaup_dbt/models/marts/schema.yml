@@ -1,0 +1,130 @@
+version: 2
+
+sources:
+  - name: marts
+    tables:
+      - name: wine_ratings_vivino
+        description: "External table with Vivino wine ratings."
+
+models:
+  - name: wines
+    description: "Enhanced wine model joining Vinbudin wines with Vivino ratings and food pairings."
+    columns:
+      - name: pk_wine
+        description: "Primary key for the wine from Vinbudin."
+        tests:
+          - not_null
+          - unique
+
+      - name: vivino_id
+        description: "ID from Vivino for mapping ratings."
+
+      - name: wine_name
+        description: "Wine name from Vinbudin."
+
+      - name: wine_name_vivino
+        description: "Wine name from Vivino."
+
+      - name: volume
+        description: "Volume of the wine in ml."
+        tests:
+          - not_null
+
+      - name: abv
+        description: "Alcohol by volume."
+
+      - name: price
+        description: "Price in ISK."
+
+      - name: country
+        description: "Formatted country name."
+
+      - name: origin_place
+        description: "Origin place within country."
+
+      - name: origin_district
+        description: "Origin district or region."
+
+      - name: grapes
+        description: "Primary grape(s) used."
+
+      - name: produced_year
+        description: "Vintage year."
+
+      - name: container_type
+        description: "Bottle/container type."
+
+      - name: first_on_market
+        description: "Date the wine first became available."
+
+      - name: taste_group
+        description: "Taste group classification."
+
+      - name: category
+        description: "Wine category."
+
+      - name: food_pairing
+        description: "Food pairings from Vinbudin."
+
+      - name: producer
+        description: "Producer from Vinbudin."
+
+      - name: seller
+        description: "Seller name."
+
+      - name: producer_vivino
+        description: "Producer name from Vivino."
+
+      - name: carbon_footprint
+        description: "Carbon footprint of the wine, if available."
+
+      - name: closing
+        description: "Closure type (e.g. cork, screw cap)."
+
+      - name: is_organic
+        description: "Whether the wine is organic."
+
+      - name: link
+        description: "Vinbudin product URL."
+
+      - name: link_vivino
+        description: "Vivino product URL."
+
+      - name: rating
+        description: "Vivino user rating."
+
+      - name: rating_count
+        description: "Vivino rating count."
+
+      - name: image_url
+        description: "Original image URL from Vivino."
+
+      - name: image_url_use
+        description: "Optimized image URL for display."
+
+      - name: rating_adjusted
+        description: "Adjusted rating for scoring."
+
+      - name: rating_count_index
+        description: "Rating weight based on rating count."
+
+      - name: rating_organic_index
+        description: "Bonus multiplier for organic wines."
+
+      - name: recommendation
+        description: "Overall recommendation score."
+
+      - name: insert_date_vivino
+        description: "Insert timestamp from Vivino."
+
+      - name: modified_date_vivino
+        description: "Last update timestamp from Vivino."
+
+      - name: sweetness
+        description: "Simplified sweetness profile."
+
+      - name: boldness
+        description: "Simplified boldness profile."
+
+      - name: food_pairings
+        description: "Food pairings seperated by a semicolon."

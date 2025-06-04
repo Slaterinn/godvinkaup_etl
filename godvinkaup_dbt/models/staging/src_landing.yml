@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: landing
+    tables:
+      - name: red_wines
+      - name: white_wines
+      - name: sparkling_wines
+      - name: rose_wines
+      - name: sante_wines
+      - name: uva_wines
+      - name: wine_food_translations
