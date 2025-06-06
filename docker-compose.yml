@@ -60,6 +60,7 @@ x-airflow-common:
     DBT_LOG_PATH: /opt/airflow/dag_logs/dbt_logs
     DBT_PROFILES_DIR: /opt/airflow/.dbt
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    GITHUB_TOKEN: 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
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -68,6 +69,7 @@ x-airflow-common:
     - ./godvinkaup_dbt:/opt/airflow/godvinkaup_dbt
     - /home/slaterinn/.dbt:/opt/airflow/.dbt
     - ./godvinkaup_dbt/dbt_modules_custom:/opt/airflow/godvinkaup_dbt/dbt_modules_custom
+    - /home/slaterinn/git_repos/godvinkaup:/opt/airflow/godvinkaup_website
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
