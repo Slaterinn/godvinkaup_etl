@@ -145,7 +145,7 @@ uva_wines AS (
             , size
             , 0
             , price
-            , country
+            , case when country = 'Usa' then 'Bandaríkin' else country end as country
             , area
             , origin_district
             , grapes
