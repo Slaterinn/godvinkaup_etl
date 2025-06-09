@@ -106,3 +106,4 @@ left join {{ ref('wine_food_pairings') }} FP
     on FP.id_wine = vinbud.id
 where vinbud.volume = 750
   and vinbud.price > 0
+  and vinbud.valid = '1'

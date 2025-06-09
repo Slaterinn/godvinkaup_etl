@@ -15,16 +15,48 @@ WITH red_wines AS (
             , origin_district
             , grapes
             , produced_year
-            , case when container_type = 'FL.' then 'Flaska' end as container_type
+            , CASE
+                    WHEN container_type = 'PET' THEN 'Plast'
+                    WHEN container_type = 'STK.' THEN 'Stykki'
+                    WHEN container_type = 'DS.' THEN 'Dós'
+                    WHEN container_type = 'FL.' THEN 'Flaska'
+                    ELSE container_type
+                END AS container_type
             , first_on_market
-            , taste_group
+            , CASE
+                    WHEN taste_group = '01TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '01MM' THEN 'Meðalfyllt og millisætt'
+                    WHEN taste_group = '01TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '01MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '01LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '01X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '01LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '01L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '01M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '01T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '02LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '02T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '02MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '02TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '02X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '02L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '02M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '02MM' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '03M' THEN 'Millisætt'
+                    WHEN taste_group = '03S' THEN 'Sætt'
+                    WHEN taste_group = '03' THEN 'Ósætt'
+                    WHEN taste_group = '04' THEN 'Ósætt'
+                    WHEN taste_group = '04M' THEN 'Millisætt'
+                    WHEN taste_group = '04S' THEN 'Sætt'
+                END AS taste_group
             , category
             , food_pairing
             , producer
             , carbon_footprint
             , closing
             , is_organic
-            --, special_order
             , link
             , batch_id
             , seller 
@@ -42,16 +74,48 @@ white_wines AS (
             , origin_district
             , grapes
             , produced_year
-            , case when container_type = 'FL.' then 'Flaska' end as container_type
+            , CASE
+                    WHEN container_type = 'PET' THEN 'Plast'
+                    WHEN container_type = 'STK.' THEN 'Stykki'
+                    WHEN container_type = 'DS.' THEN 'Dós'
+                    WHEN container_type = 'FL.' THEN 'Flaska'
+                    ELSE container_type
+                END AS container_type
             , first_on_market
-            , taste_group
+            , CASE
+                    WHEN taste_group = '01TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '01MM' THEN 'Meðalfyllt og millisætt'
+                    WHEN taste_group = '01TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '01MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '01LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '01X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '01LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '01L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '01M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '01T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '02LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '02T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '02MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '02TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '02X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '02L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '02M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '02MM' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '03M' THEN 'Millisætt'
+                    WHEN taste_group = '03S' THEN 'Sætt'
+                    WHEN taste_group = '03' THEN 'Ósætt'
+                    WHEN taste_group = '04' THEN 'Ósætt'
+                    WHEN taste_group = '04M' THEN 'Millisætt'
+                    WHEN taste_group = '04S' THEN 'Sætt'
+                END AS taste_group
             , category
             , food_pairing
             , producer
             , carbon_footprint
             , closing
             , is_organic
-            --, special_order
             , link
             , batch_id
             , seller 
@@ -69,16 +133,48 @@ sparkling_wines AS (
             , origin_district
             , grapes
             , produced_year
-            , case when container_type = 'FL.' then 'Flaska' end as container_type
+            , CASE
+                    WHEN container_type = 'PET' THEN 'Plast'
+                    WHEN container_type = 'STK.' THEN 'Stykki'
+                    WHEN container_type = 'DS.' THEN 'Dós'
+                    WHEN container_type = 'FL.' THEN 'Flaska'
+                    ELSE container_type
+                END AS container_type
             , first_on_market
-            , taste_group
+            , CASE
+                    WHEN taste_group = '01TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '01MM' THEN 'Meðalfyllt og millisætt'
+                    WHEN taste_group = '01TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '01MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '01LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '01X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '01LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '01L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '01M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '01T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '02LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '02T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '02MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '02TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '02X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '02L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '02M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '02MM' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '03M' THEN 'Millisætt'
+                    WHEN taste_group = '03S' THEN 'Sætt'
+                    WHEN taste_group = '03' THEN 'Ósætt'
+                    WHEN taste_group = '04' THEN 'Ósætt'
+                    WHEN taste_group = '04M' THEN 'Millisætt'
+                    WHEN taste_group = '04S' THEN 'Sætt'
+                END AS taste_group
             , category
             , food_pairing
             , producer
             , carbon_footprint
             , closing
             , is_organic
-            --, special_order
             , link
             , batch_id
             , seller 
@@ -96,16 +192,48 @@ rose_wines AS (
             , origin_district
             , grapes
             , produced_year
-            , case when container_type = 'FL.' then 'Flaska' end as container_type
+            , CASE
+                    WHEN container_type = 'PET' THEN 'Plast'
+                    WHEN container_type = 'STK.' THEN 'Stykki'
+                    WHEN container_type = 'DS.' THEN 'Dós'
+                    WHEN container_type = 'FL.' THEN 'Flaska'
+                    ELSE container_type
+                END AS container_type
             , first_on_market
-            , taste_group
+            , CASE
+                    WHEN taste_group = '01TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '01MM' THEN 'Meðalfyllt og millisætt'
+                    WHEN taste_group = '01TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '01MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '01LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '01X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '01LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '01L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '01M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '01T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02TM' THEN 'Kröftugt og millisætt'
+                    WHEN taste_group = '02LS' THEN 'Létt og sætt'
+                    WHEN taste_group = '02T' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '02LM' THEN 'Létt og millisætt'
+                    WHEN taste_group = '02MS' THEN 'Meðalfyllt og sætt'
+                    WHEN taste_group = '02TS' THEN 'Kröftugt og sætt'
+                    WHEN taste_group = '02X' THEN 'Eftirréttarvín - sætvín'
+                    WHEN taste_group = '02L' THEN 'Létt og ósætt'
+                    WHEN taste_group = '02M' THEN 'Meðalfyllt og ósætt'
+                    WHEN taste_group = '02MM' THEN 'Kröftugt og ósætt'
+                    WHEN taste_group = '03M' THEN 'Millisætt'
+                    WHEN taste_group = '03S' THEN 'Sætt'
+                    WHEN taste_group = '03' THEN 'Ósætt'
+                    WHEN taste_group = '04' THEN 'Ósætt'
+                    WHEN taste_group = '04M' THEN 'Millisætt'
+                    WHEN taste_group = '04S' THEN 'Sætt'
+                END AS taste_group
             , category
             , food_pairing
             , producer
             , carbon_footprint
             , closing
             , is_organic
-            --, special_order
             , link
             , batch_id
             , seller
@@ -115,7 +243,7 @@ rose_wines AS (
 sante_wines AS (
     SELECT id
             , name
-            , size * 10
+            , size
             , 0
             , price
             , case when country = 'US' then 'Bandaríkin'
@@ -127,13 +255,18 @@ sante_wines AS (
             , 'Flaska'
             , first_sale_date
             , 'N/F'
-            , type 
+            , CASE 
+                    WHEN type IN ('Freyðivín', 'Kampavín') THEN 'Sparkling Wine'
+                    WHEN type = 'Rauðvín' THEN 'Red Wine'
+                    WHEN type = 'Rósavín' THEN 'Rose'
+                    WHEN type = 'Hvítvín' THEN 'White Wine'
+                    ELSE type
+                END AS category 
             , 'N/F'
             , producer
             , 0
             , 'N/F'
             , 'true'
-            --, 'false'
             , product_url
             , batch_date
             , 'Sante'
@@ -145,7 +278,9 @@ uva_wines AS (
             , size
             , 0
             , price
-            , case when country = 'Usa' then 'Bandaríkin' else country end as country
+            , case when country = 'USA' then 'bandaríkin' 
+		when country = 'Suður Afríka' then 'suðurafríka' 
+		when country = 'Nýja Sjáland' then 'nýjasjáland' else country end as country
             , area
             , origin_district
             , grapes
@@ -153,13 +288,18 @@ uva_wines AS (
             , 'Flaska'
             , CAST(NULL AS DATE)
             , 'N/F'
-            , wine_type 
+            , CASE 
+                            WHEN wine_type = 'Rauðvín' THEN 'Red Wine'
+                            WHEN wine_type = 'Hvítvín' THEN 'White Wine'
+                            WHEN wine_type = 'Rósavín' THEN 'Rose'
+                            WHEN wine_type IN ('Cava', 'Freyðivín', 'Kampavín') THEN 'Sparkling Wine'
+                            ELSE wine_type
+                        END AS category
             , 'N/F'
             , producer
             , 0
             , 'N/F'
             , 'true'
-            --, 'false'
             , link
             , batch_id
             , 'Uva'
