@@ -70,6 +70,7 @@ x-airflow-common:
     - /home/slaterinn/.dbt:/opt/airflow/.dbt
     - ./godvinkaup_dbt/dbt_modules_custom:/opt/airflow/godvinkaup_dbt/dbt_modules_custom
     - /home/slaterinn/git_repos/godvinkaup:/opt/airflow/godvinkaup_website
+    - ./.env:/opt/airflow/.env
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on

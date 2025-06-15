@@ -54,3 +54,9 @@ RUN pip install protobuf==3.20.3
 RUN pip install dbt-postgres==1.5.9
 
 #RUN dbt deps --project-dir /opt/airflow/example_dbt_project
+
+# Install Qdrant-client and openai
+RUN pip install \
+    openai \
+    qdrant-client \
+    python-dotenv

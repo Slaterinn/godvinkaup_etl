@@ -4,6 +4,7 @@ import re
 import pandas as pd
 import psycopg2
 import datetime
+import unicodedata
 
 # Database connection
 connection = psycopg2.connect(
@@ -60,6 +61,9 @@ wine_country_map = {
     "Sonoma": "USA"
 }
 
+def normalize_str(s):
+    """Return lowercase ASCII representation of the string"""
+    return unicodedata.normalize('NFKD', s.strip()).encode('ASCII', 'ignore').decode('ASCII').lower()
 
 def recreate_staging_table(cursor) -> None:
     cursor.execute("""
@@ -95,11 +99,13 @@ def insert_wines(connection, wines) -> None:
 
 
 def get_filter_values(connection, filter_name) -> list:
-    query = f"SELECT filter_value FROM landing.sante_wine_filters WHERE filter_key = '{filter_name}'"
+    op = "LIKE" if "%" in filter_name else "="
+    query = f"SELECT filter_value FROM landing.sante_wine_filters WHERE filter_key {op} %s"
     with connection.cursor() as cursor:
-        cursor.execute(query)
+        cursor.execute(query, (filter_name,))
         result = cursor.fetchall()
         return [item[0] for item in result]
+
 
 
 def run():
@@ -155,12 +161,23 @@ def run():
                 except ValueError:
                     continue
 
-        # Size in ml
-        product_size = next((
-            int(float(tag.replace('cl', '').strip()) * 10)
-            for tag in tags 
-            if 'cl' in tag and tag.replace('cl', '').strip().replace('.', '', 1).isdigit()
-        ), 0)
+        # Size in ml — check title first
+        product_size = 0
+
+        # Try to extract ml from title (e.g. "375ml")
+        ml_match = re.search(r'(\d{2,4})\s?ml', title_raw.lower())
+        if ml_match:
+            product_size = int(ml_match.group(1))
+        else:
+            # Try to extract cl from tags (e.g. "75 cl" → 750ml)
+            for tag in tags:
+                tag_lower = tag.lower()
+                if 'cl' in tag_lower:
+                    cl_match = re.search(r'([\d.]+)\s*cl', tag_lower)
+                    if cl_match:
+                        product_size = int(float(cl_match.group(1)) * 10)
+                        break
+
 
         # Country
         country = next((tag for tag in tags if tag in country_list), 'N/F')
@@ -172,8 +189,20 @@ def run():
                     break
 
         area = next((tag for tag in tags if tag in area_list), 'N/F')
-        grapes_l = [tag for tag in tags if tag in grapes_list]
+
+        # Normalized grape matching
+        normalized_tags = [normalize_str(tag) for tag in tags]
+        normalized_grapes = {
+            normalize_str(grape): grape
+            for grape in grapes_list
+        }
+        grapes_l = [
+            normalized_grapes[n_tag]
+            for n_tag in normalized_tags
+            if n_tag in normalized_grapes
+        ]
         grapes = ",".join(grapes_l)
+
         district = next((tag for tag in tags if tag in district_list), 'N/F')
 
         result = (

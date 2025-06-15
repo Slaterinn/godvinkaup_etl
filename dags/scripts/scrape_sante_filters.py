@@ -68,35 +68,33 @@ def insert_values(connection, records):
         raise
 
 def scrape_filters():
-    """ Scrape filter data from the Shopify website """
+    """ Scrape filter data from the Shopify website using input elements """
     url = "https://sante.is/collections/lettvin"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0 Safari/537.36"
+    }
+
     try:
-        # Send a GET request to the URL
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, "html.parser")
-            list_items = soup.find_all(class_="list-menu__item facets__item")
+            input_elements = soup.find_all("input", class_="field__checkbox")
 
             filter_records = []
-            for item in list_items:
-                input_tag = item.find('input')
-                label_tag = item.find('label')
+            for input_tag in input_elements:
+                filter_name = input_tag.get("name")         # e.g. "filter.p.m.custom.herad"
+                filter_value = input_tag.get("value")       # e.g. "Alto Adige"
 
-                if input_tag and label_tag:
-                    name = input_tag.get('name')  # full filter name
-                    label_text = label_tag.select_one('.facet-checkbox__text-label')
-                    value = label_text.get_text(strip=True) if label_text else None
+                if filter_name and filter_value:
+                    filter_key = filter_name.rsplit(".", 1)[-1]  # e.g. "herad"
 
-                    if name and value:
-                        filter_key = name.rsplit('.', 1)[-1]
+                    filter_records.append({
+                        "filter_name": filter_name,
+                        "filter_key": filter_key,
+                        "filter_value": filter_value
+                    })
 
-                        filter_records.append({
-                            "filter_name": name,         # e.g., "filter.p.m.custom.flokkur"
-                            "filter_key": filter_key,    # e.g., "flokkur"
-                            "filter_value": value        # e.g., "Rauðvín"
-                        })
-
-            logger.info(f"✅ Scraped {len(filter_records)} filter records.")
+            logger.info(f"✅ Scraped {len(filter_records)} filter records using input elements.")
             return filter_records
         else:
             logger.error(f"❌ Failed to retrieve the page, status code: {response.status_code}")
@@ -104,6 +102,7 @@ def scrape_filters():
     except Exception as e:
         logger.error(f"❌ Error scraping filters: {e}")
         raise
+
 
 def run():
     """ Main function to orchestrate the process """
