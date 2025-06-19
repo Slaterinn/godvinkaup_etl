@@ -65,9 +65,7 @@ def normalize_str(s):
     """Return lowercase ASCII representation of the string"""
     return unicodedata.normalize('NFKD', s.strip()).encode('ASCII', 'ignore').decode('ASCII').lower()
 
-def strip_html_tags(text):
-    #remove all HTML tags
-    return re.sub(r'<[^>]+>', '', text).strip()
+
 
 def recreate_staging_table(cursor) -> None:
     cursor.execute("""
@@ -149,10 +147,7 @@ def run():
 
         product_handle = product["handle"]
         product_url = link_prefix + product_handle
-
-        if product["body_html"]:
-            description = product["body_html"]
-            description_clean = strip_html_tags(description)
+        description = product["body_html"]
 
         tags = product["tags"]
 
@@ -217,7 +212,7 @@ def run():
         result = (
             pid, title, produced_year, producer, wine_type, product_price, product_size,
             product_available, product_url, image_url, created_at,
-            country, area, grapes, description_clean, district, insert_date
+            country, area, grapes, description, district, insert_date
         )
         wines_to_insert.append(result)
 
