@@ -98,12 +98,13 @@ select
         when vinbud.taste_group = 'Eftirréttarvín - sætvín' then 'Eftirréttarvín'
         else 'N/F' 
       end as boldness
-    , FP.food_pairings
+    , coalesce(FP.food_pairings, vinbud.food_pairing) as food_pairings
+    , vinbud.description
 from {{ ref('dim_wines') }} vinbud
 inner join {{ source('marts', 'wine_ratings_vivino') }} vino 
     on vinbud.id = vino.pk_wine
 left join {{ ref('wine_food_pairings') }} FP 
     on FP.id_wine = vinbud.id
-where vinbud.volume = 750
+where vinbud.volume in (0, 750)
   and vinbud.price > 0
   and vinbud.valid = '1'

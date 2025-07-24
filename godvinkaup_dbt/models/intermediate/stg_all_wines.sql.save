@@ -57,13 +57,13 @@ WITH red_wines AS (
             , wines.carbon_footprint
             , wines.closing
             , wines.is_organic
-            , coalesce(wines_links.link, wines.link) as link
+            , wines.link
             , wines.batch_id
             , wines.seller
             , wines_desc.description
         FROM {{ source('landing', 'red_wines') }} wines
         left join {{ source('landing', 'atvr_wine_descriptions') }} wines_desc on (wines.id = wines_desc.wine_id)
-	left join {{ source('landing', 'atvr_wine_links') }} wines_links on (wines.id = wines_links.wine_id)
+	
         where wines.container_type in ('FL.', 'PET')
 ),
 white_wines AS (
@@ -125,7 +125,7 @@ white_wines AS (
             , wines_desc.description
         FROM {{ source('landing', 'white_wines') }} wines
         left join {{ source('landing', 'atvr_wine_descriptions') }} wines_desc on (wines.id = wines_desc.wine_id)
-	left join {{ source('landing', 'atvr_wine_links') }} wines_links on (wines.id = wines_links.wine_id)
+	left join {{ source('landing', 'atvr_wine_links')  }} wines_links on (wines.id = wines_links.wine_id)
         where wines.container_type in ('FL.', 'PET')
 ),
 
@@ -188,7 +188,7 @@ sparkling_wines AS (
             , wines_desc.description
         FROM {{ source('landing', 'sparkling_wines') }} wines
         left join {{ source('landing', 'atvr_wine_descriptions') }} wines_desc on (wines.id = wines_desc.wine_id)
-	left join {{ source('landing', 'atvr_wine_links') }} wines_links on (wines.id = wines_links.wine_id)
+	left join {{ source('landing', 'atvr_wine_links')  }} wines_links on (wines.id = wines_links.wine_id)
         where wines.container_type in ('FL.', 'PET')
 ),
 
@@ -251,7 +251,7 @@ rose_wines AS (
             , wines_desc.description
         FROM {{ source('landing', 'rose_wines') }} wines
         left join {{ source('landing', 'atvr_wine_descriptions') }} wines_desc on (wines.id = wines_desc.wine_id)
-	left join {{ source('landing', 'atvr_wine_links') }} wines_links on (wines.id = wines_links.wine_id)
+	left join {{ source('landing', 'atvr_wine_links')  }} wines_links on (wines.id = wines_links.wine_id)
         where wines.container_type in ('FL.', 'PET')
 ),
 

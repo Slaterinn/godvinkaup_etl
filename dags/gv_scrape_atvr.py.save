@@ -7,7 +7,6 @@ from scripts.scrape_white_wines import run as scrape_white_wines
 from scripts.scrape_rose_wines import run as scrape_rose_wines
 from scripts.scrape_sparkling_wines import run as scrape_sparkling_wines
 from scripts.fix_atvr_links import run as fix_atvr_links
-from scripts.scrape_atvr_descriptions import run as scrape_descriptions
 
 default_args = {
     'owner': 'airflow',
@@ -49,16 +48,7 @@ with DAG(
         execution_timeout=timedelta(minutes=2)
     )
 
-    fix_links = PythonOperator(
-        task_id='fix_atvr_links',
-        python_callable=fix_atvr_links,
-        execution_timeout=timedelta(minutes=2)
-    )
 
-    scrape_descriptions = PythonOperator(
-        task_id='scrape_descriptions',
-        python_callable=scrape_descriptions,
-        execution_timeout=timedelta(minutes=2)
-    )
 
-    scrape_red >> scrape_white >> scrape_rose >> scrape_sparkling >> fix_links >> scrape_descriptions
+
+    scrape_red >> scrape_white >> scrape_rose >> scrape_sparkling

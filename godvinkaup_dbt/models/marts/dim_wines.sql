@@ -1,3 +1,4 @@
+
 {{ config(
     schema='marts',
     materialized='incremental',
@@ -56,6 +57,7 @@ select
 	e.link,
 	e.batch_id,
 	e.seller,
+	e.description,
     0 as valid
 from expired e
 {% endif %}
