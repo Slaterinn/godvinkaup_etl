@@ -287,6 +287,7 @@ sante_wines AS (
             , 'Sante' as seller
             , description as description
         FROM {{ source('landing', 'sante_wines') }}
+	    where available = 'true'
 ),
 uva_wines AS (
     SELECT wine_id as id
