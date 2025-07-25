@@ -8,7 +8,7 @@ from tqdm import tqdm
 import uuid
 
 BATCH_SIZE = 50
-QDRANT_COLLECTION_NAME = "wines_embeddings"  # You can change this if desired
+QDRANT_COLLECTION_NAME = "wines_embeddings"
 
 def run():
     # Load environment variables from Airflow Variables
@@ -34,20 +34,36 @@ def run():
     cursor = pg_conn.cursor()
 
     cursor.execute("""
-        SELECT pk_wine, text_to_embed
+        SELECT
+            pk_wine,
+            text_to_embed,
+            wine_name,
+            volume,
+            price,
+            country,
+            origin_place,
+            origin_district,
+            grapes,
+            produced_year,
+            category,
+            producer,
+            seller,
+            seller_link,
+            link_vivino,
+            recommendation,
+            image_url_use
         FROM marts.wines_to_embed
         WHERE recommendation >= 0.5
     """)
     rows = cursor.fetchall()
 
     print(f"Fetched {len(rows)} wines to embed.")
-
     if not rows:
-        print("No wines found to embed.")
         return
 
     ids = [row[0] for row in rows]
     texts = [row[1] for row in rows]
+    metadata = [row[2:] for row in rows]
 
     # Generate a test embedding to get dimensionality
     print("Generating sample embedding to detect dimensions...")
@@ -77,6 +93,7 @@ def run():
     for i in tqdm(range(0, len(texts), BATCH_SIZE)):
         batch_ids = ids[i:i + BATCH_SIZE]
         batch_texts = texts[i:i + BATCH_SIZE]
+        batch_meta = metadata[i:i + BATCH_SIZE]
 
         embeddings = openai_client.embeddings.create(
             input=batch_texts,
@@ -85,9 +102,26 @@ def run():
 
         points = [
             PointStruct(
-                id=str(uuid.uuid5(uuid.NAMESPACE_DNS, f"wine-{batch_ids[j]}")), # consistent UUID based on wine ID
+                id=str(uuid.uuid5(uuid.NAMESPACE_DNS, f"wine-{batch_ids[j]}")),
                 vector=embeddings[j].embedding,
-                payload={"pk_wine": batch_ids[j]}
+                payload={
+                    "pk_wine": batch_ids[j],
+                    "wine_name": batch_meta[j][0],
+                    "volume": batch_meta[j][1],
+                    "price": float(batch_meta[j][2]),
+                    "country": batch_meta[j][3],
+                    "origin_place": batch_meta[j][4],
+                    "origin_district": batch_meta[j][5],
+                    "grapes": batch_meta[j][6],
+                    "produced_year": batch_meta[j][7],
+                    "category": batch_meta[j][8],
+                    "producer": batch_meta[j][9],
+                    "seller": batch_meta[j][10],
+                    "seller_link": batch_meta[j][11],
+                    "link_vivino": batch_meta[j][12],
+                    "recommendation": float(batch_meta[j][13]),
+                    "image_url": batch_meta[j][14],
+                }
             )
             for j in range(len(batch_ids))
         ]
