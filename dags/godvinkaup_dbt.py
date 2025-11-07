@@ -33,32 +33,32 @@ with DAG(
     tags=['godvinkaup', 'dbt', 'union'],
 ) as dag:
 
-    wait_for_atvr = PythonSensor(
-        task_id='wait_for_atvr_extract',
-        python_callable=has_dag_succeeded_today,
-        op_kwargs={'dag_id': 'godvinkaup_extract_atvr'},
-        poke_interval=30,
-        timeout=3600,
-        mode='poke',
-    )
+#    wait_for_atvr = PythonSensor(
+#        task_id='wait_for_atvr_extract',
+#        python_callable=has_dag_succeeded_today,
+#        op_kwargs={'dag_id': 'godvinkaup_extract_atvr'},
+#        poke_interval=30,
+#        timeout=3600,
+#        mode='poke',
+#    )
 
-    wait_for_sante = PythonSensor(
-        task_id='wait_for_sante_extract',
-        python_callable=has_dag_succeeded_today,
-        op_kwargs={'dag_id': 'godvinkaup_extract_sante'},
-        poke_interval=30,
-        timeout=3600,
-        mode='poke',
-    )
+#    wait_for_sante = PythonSensor(
+#        task_id='wait_for_sante_extract',
+#        python_callable=has_dag_succeeded_today,
+#        op_kwargs={'dag_id': 'godvinkaup_extract_sante'},
+#        poke_interval=30,
+#        timeout=3600,
+#        mode='poke',
+#    )
 
-    wait_for_uva = PythonSensor(
-        task_id='wait_for_uva_extract',
-        python_callable=has_dag_succeeded_today,
-        op_kwargs={'dag_id': 'godvinkaup_extract_uva'},
-        poke_interval=30,
-        timeout=3600,
-        mode='poke',
-    )
+#    wait_for_uva = PythonSensor(
+#        task_id='wait_for_uva_extract',
+#        python_callable=has_dag_succeeded_today,
+#        op_kwargs={'dag_id': 'godvinkaup_extract_uva'},
+#        poke_interval=30,
+#        timeout=3600,
+#        mode='poke',
+#    )
 
     dbt_run = BashOperator(
         task_id='GodVinkaup_dbt_run',
@@ -69,4 +69,6 @@ with DAG(
     )
 
     # Set dependencies
-    [wait_for_atvr, wait_for_sante, wait_for_uva] >> dbt_run
+    #[wait_for_atvr, wait_for_sante, wait_for_uva] >> dbt_run
+    dbt_run
+

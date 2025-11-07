@@ -22,6 +22,8 @@ select
 , link_vivino
 , recommendation
 , image_url_use
+, rating
+, rating_count
 ,
 case when category = 'Red Wine' then 'Þetta er rauðvín.' when category = 'White Wine' then 'Þetta er hvítvín.' when category = 'Sparkling Wine' then 'Þetta er freyðivín.' when category = 'Rose' then 'Þetta er rósavín.' else '' end ||
 case when sweetness != 'N/F' then sweetness || '.' else '' end  ||
@@ -46,6 +48,12 @@ case when recommendation >= 0.95 then ' Talið framúrskarandi kaup miðað við
 	 when recommendation >= 0.65 then ' Talið góð kaup miðað við gæði og verð. '
 	 when rating >= 4.2 		  then ' Notendur vivino gefa þessu víni mjög háa einkunn.'
 	 else '' end ||
+'Einkunn á vivino: ' || rating || ' sem telst sem ' ||
+case when rating >= 4.2 then 'framúrskarandi'
+	 when rating >= 4 then 'mjög góð'
+	 when rating >=3.8 then 'góð'
+	 when rating >= 3.6 then 'ágæt'
+	 else 'slæm' end || ' einkunn'
 ' Verð: ' || price::numeric::integer || ' kr.'
 as text_to_embed
 from {{ ref('wines') }}

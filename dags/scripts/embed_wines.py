@@ -51,7 +51,9 @@ def run():
             seller_link,
             link_vivino,
             recommendation,
-            image_url_use
+            image_url_use,
+	    rating,
+	    rating_count
         FROM marts.wines_to_embed
         WHERE recommendation >= 0.5
     """)
@@ -121,6 +123,8 @@ def run():
                     "link_vivino": batch_meta[j][12],
                     "recommendation": float(batch_meta[j][13]),
                     "image_url": batch_meta[j][14],
+                    "rating": batch_meta[j][15],
+                    "rating_count": batch_meta[j][16],
                 }
             )
             for j in range(len(batch_ids))

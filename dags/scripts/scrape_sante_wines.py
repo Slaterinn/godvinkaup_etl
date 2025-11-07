@@ -141,7 +141,11 @@ def run():
 
         producer = product["vendor"]
         wine_type = product["product_type"]
-        image_url = product["images"][0]["src"]
+        images = product.get("images")
+        if images and len(images) > 0 and "src" in images[0]:
+            image_url = images[0]["src"]
+        else:
+            image_url = ""
         created_at = product["created_at"]
 
         product_price = product["variants"][0]["price"]
