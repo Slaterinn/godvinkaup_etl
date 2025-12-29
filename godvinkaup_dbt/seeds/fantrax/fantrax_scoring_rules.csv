@@ -1,0 +1,71 @@
+position,stat_key,stat_name,points_per_unit,is_positive,is_base_stat,season
+F,KP,Key Passes,2,true,true,2025_26
+F,BCM,Big Chances Missed,-1,false,true,2025_26
+F,AER,Aerials Won,0.5,true,true,2025_26
+F,CoS,Successful Dribbles,1,true,true,2025_26
+F,ACNC,Accurate Crosses,1,true,true,2025_26
+F,DIS,Dispossessed,-0.5,false,true,2025_26
+F,FC,Fouls Committed,-0.25,false,true,2025_26
+F,ErG,Errors Led to Goal,-2,false,true,2025_26
+F,FS,Fouls Suffered,0.25,true,true,2025_26
+F,G,Goals,9,true,false,2025_26
+F,W,Wins,1,true,false,2025_26
+F,YC,Yellow Cards,-3,false,true,2025_26
+F,SYC,Second Yellow Cards,-4,false,true,2025_26
+F,PKM,Penalty Kicks Missed,-5,false,true,2025_26
+F,AT,Assists (Total),6,true,false,2025_26
+F,OG,Own Goals,-9,false,true,2025_26
+F,HT,Hat Tricks,5,true,false,2025_26
+F,Int,Interceptions,1,true,true,2025_26
+F,RC,Red Cards,-7,false,true,2025_26
+F,SOT,Shots on Target,2,true,true,2025_26
+F,TkW,Tackles Won,1,true,true,2025_26
+F,TLM,Tackles Last Man,2,true,true,2025_26
+M,KP,Key Passes,2,true,true,2025_26
+M,BCM,Big Chances Missed,-1,false,true,2025_26
+M,AER,Aerials Won,0.5,true,true,2025_26
+M,CoS,Successful Dribbles,1,true,true,2025_26
+M,ACNC,Accurate Crosses,1,true,true,2025_26
+M,DIS,Dispossessed,-0.5,false,true,2025_26
+M,FC,Fouls Committed,-0.25,false,true,2025_26
+M,ErG,Errors Led to Goal,-2,false,true,2025_26
+M,FS,Fouls Suffered,0.25,true,true,2025_26
+M,G,Goals,9,true,false,2025_26
+M,W,Wins,1,true,false,2025_26
+M,YC,Yellow Cards,-3,false,true,2025_26
+M,SYC,Second Yellow Cards,-4,false,true,2025_26
+M,PKM,Penalty Kicks Missed,-5,false,true,2025_26
+M,AT,Assists (Total),6,true,false,2025_26
+M,OG,Own Goals,-9,false,true,2025_26
+M,HT,Hat Tricks,5,true,false,2025_26
+M,Int,Interceptions,1,true,true,2025_26
+M,RC,Red Cards,-7,false,true,2025_26
+M,SOT,Shots on Target,2,true,true,2025_26
+M,CS,Clean Sheets On Field,1,true,false,2025_26
+M,TkW,Tackles Won,1,true,true,2025_26
+M,TLM,Tackles Last Man,2,true,true,2025_26
+D,KP,Key Passes,2,true,true,2025_26
+D,BCM,Big Chances Missed,-1,false,true,2025_26
+D,AER,Aerials Won,1,true,true,2025_26
+D,CLR,Effective Clearances,0.25,true,true,2025_26
+D,CoS,Successful Dribbles,1,true,true,2025_26
+D,ACNC,Accurate Crosses,1,true,true,2025_26
+D,DIS,Dispossessed,-0.5,false,true,2025_26
+D,FC,Fouls Committed,-0.25,false,true,2025_26
+D,ErG,Errors Led to Goal,-2,false,true,2025_26
+D,LBA,Long Balls Accurate,0.5,true,true,2025_26
+D,FS,Fouls Suffered,0.25,true,true,2025_26
+D,G,Goals,10,true,false,2025_26
+D,W,Wins,1,true,false,2025_26
+D,YC,Yellow Cards,-3,false,true,2025_26
+D,SYC,Second Yellow Cards,-4,false,true,2025_26
+D,PKM,Penalty Kicks Missed,-5,false,true,2025_26
+D,AT,Assists (Total),8,true,false,2025_26
+D,OG,Own Goals,-9,false,true,2025_26
+D,HT,Hat Tricks,5,true,false,2025_26
+D,Int,Interceptions,1,true,true,2025_26
+D,RC,Red Cards,-7,false,true,2025_26
+D,SOT,Shots on Target,2,true,true,2025_26
+D,CS,Clean Sheets On Field,6,true,false,2025_26
+D,TkW,Tackles Won,1,true,true,2025_26
+D,TLM,Tackles Last Man,2,true,true,2025_26

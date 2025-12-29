@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: mart_fantrax_player_projection
+    description: >
+      Player-level fantasy point projections for the upcoming gameweek,
+      including baseline performance, opponent adjustment, and expected minutes.
+    columns:
+      - name: player_id
+        tests:
+          - not_null
+
+      - name: projected_fp_final
+        tests:
+          - not_null
+
+      - name: confidence_score
+        tests:
+          - not_null

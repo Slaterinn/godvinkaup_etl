@@ -1,0 +1,36 @@
+version: 2
+
+seeds:
+  - name: fantrax_scoring_rules
+    description: Fantrax scoring rules by position and season
+    config:
+      schema: landing
+      quote_columns: false
+    columns:
+      - name: position
+        tests: [not_null]
+      - name: stat_key
+        tests: [not_null]
+      - name: points_per_unit
+        tests: [not_null]
+      - name: season
+        tests: [not_null]
+
+  - name: fantrax_scoring_tiers
+    description: >
+      Tiered scoring rules for cumulative stats such as GAO and SFTP.
+      Applied on top of base scoring rules.
+    config:
+      schema: landing
+      quote_columns: false
+    columns:
+      - name: position
+        tests: [not_null]
+      - name: stat_key
+        tests: [not_null]
+      - name: from_value
+        tests: [not_null]
+      - name: to_value
+        tests: [not_null]
+      - name: points_per_unit
+        tests: [not_null]

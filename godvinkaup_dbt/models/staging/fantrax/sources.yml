@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: landing
+    schema: landing
+    tables:
+      - name: fantrax_player_scoring
+      - name: fantrax_player_minutes
+      - name: fantrax_player_service
+      - name: fantrax_scoring_rules
+      - name: fantrax_scoring_tiers
+      - name: fantrax_player_list

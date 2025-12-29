@@ -1,0 +1,9 @@
+position,stat_key,min_value,max_value,step_size,points_per_step,season
+D,GAO,0,1,1,0,2025_26
+D,GAO,2,99,1,-2,2025_26
+D,SFTP,5,25,5,0.5,2025_26
+D,SFTP,26,500,5,1.0,2025_26
+M,SFTP,5,25,5,0.5,2025_26
+M,SFTP,26,500,5,1.0,2025_26
+F,SFTP,5,25,5,0.5,2025_26
+F,SFTP,26,500,5,1.0,2025_26
