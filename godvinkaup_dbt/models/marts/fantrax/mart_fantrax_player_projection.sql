@@ -2,16 +2,19 @@
 with base_events as (
 
     select
-        player_id,
-        scoring_position,
-        team_short,
-        event_id,
-        event_date,
-        fantasy_points,
-	base_points,
-	event_points,
-        minutes_played
-    from {{ ref('int_fantrax_player_event_totals') }}
+        pe.player_id,
+        pe.scoring_position,
+        pe.team_short,
+	tn.team_name as team_full_name,
+        pe.event_id,
+        pe.event_date,
+        pe.fantasy_points,
+	pe.base_points,
+	pe.event_points,
+	pe.minutes_played
+    from {{ ref('int_fantrax_player_event_totals') }} pe
+	JOIN {{ ref('stg_fantrax_team_names') }} tn
+		ON pe.team_short = tn.team_short
 
 ),
 
@@ -24,6 +27,7 @@ player_baseline as (
         player_id,
         scoring_position,
         team_short,
+	team_full_name,
 
         count(*)                            as matches_played,
         avg(fantasy_points)                 as avg_fp,
@@ -46,76 +50,23 @@ player_baseline as (
         end                              as avg_base_fp_per_90
 
     from base_events
-    group by 1,2,3
+    group by 1,2,3,4
 ),
 
 -- -------------------------------------------------
 -- Expected minutes (simple & explainable)
 -- -------------------------------------------------
-team_events as (
+player_minutes as (
 
     select
-        ec.event_id,
-        ec.match_date as event_date,
-        pl.player_id,
-        pl.team
-    from {{ ref('int_fantrax_event_context') }} ec
-    join {{ ref('stg_fantrax_player_list') }} pl
-      on pl.team = ec.team
+        pm.player_id,
+        pm.avg_minutes_last_5,
+        pm.avg_minutes_before,
+	pm.expected_minutes,
+	pm.role_label,
+	pm.minutes_trend
+    from {{ ref('int_fantrax_player_minutes') }} pm
 ),
-
-player_minutes_full as (
-
-    select
-        te.player_id,
-        te.event_id,
-        te.event_date,
-        coalesce(pet.minutes_played, 0) as minutes_played
-    from team_events te
-    left join {{ ref('int_fantrax_player_event_totals') }} pet
-      on te.player_id = pet.player_id
-     and te.event_id  = pet.event_id
-),
-
-recent_events as (
-
-    select
-        player_id,
-        minutes_played,
-        row_number() over (
-            partition by player_id
-            order by event_date desc
-        ) as rn
-    from player_minutes_full
-),
-
-recent_minutes as (
-
-    select
-        player_id,
-        avg(minutes_played) as avg_minutes_last_5
-    from recent_events
-    where rn <= 5
-    group by player_id
-),
-
-expected_minutes as (
-
-    select
-        player_id,
-	avg_minutes_last_5,
-        case
-            when avg_minutes_last_5 >= 80 then 90
-            when avg_minutes_last_5 >= 65 then 80
-            when avg_minutes_last_5 >= 45 then 65
-            when avg_minutes_last_5 >= 25 then 40
-            when avg_minutes_last_5 >  10 then 20
-            else 0
-        end as expected_minutes
-
-    from recent_minutes
-),
-
 
 -- -------------------------------------------------
 -- Upcoming fixture context
@@ -123,10 +74,13 @@ expected_minutes as (
 upcoming_fixture as (
 
     select
-        player_id,
-        next_opponent        as opponent,
-        next_home_away           as home_away
-    from {{ ref('stg_fantrax_player_list') }}
+        pl.player_id,
+	pl.next_opponent	as opponent,
+        tn.team_name        	as opponent_name,
+        pl.next_home_away	as home_away
+    from {{ ref('stg_fantrax_player_list') }} pl
+	join {{ ref('stg_fantrax_team_names') }} tn
+		on (pl.next_opponent = tn.team_short)
 ),
 
 -- -------------------------------------------------
@@ -273,11 +227,11 @@ expected_g_a as (
         f.opponent,
         f.home_away,
 
-        em.expected_minutes,
+        pm.expected_minutes,
 
         -- base expectation from player rate
-        (p.goals_per90   * em.expected_minutes / 90.0) as fantasy_xg_raw,
-        (p.assists_per90 * em.expected_minutes / 90.0) as fantasy_xa_raw,
+        (p.goals_per90   * pm.expected_minutes / 90.0) as fantasy_xg_raw,
+        (p.assists_per90 * pm.expected_minutes / 90.0) as fantasy_xa_raw,
 
         -- opponent factor: how much opponent concedes vs league average
         -- shrink it to avoid overreaction (0.7 baseline + 0.3 opponent signal)
@@ -286,8 +240,8 @@ expected_g_a as (
     from player_rates p
     left join upcoming_fixture f
         on p.player_id = f.player_id
-    join expected_minutes em
-        on p.player_id = em.player_id
+    join player_minutes pm
+        on p.player_id = pm.player_id
     left join opponent_defense od
         on od.opponent = f.opponent
     cross join league_defense ld
@@ -304,7 +258,9 @@ final as (
 	a.player_name,
         p.scoring_position       as position,
         p.team_short,
+	p.team_full_name,
         f.opponent,
+	f.opponent_name as opponent_full_name,
         f.home_away,
 
         p.matches_played,
@@ -316,19 +272,23 @@ final as (
 
         coalesce(p.avg_fp_per_90, p.avg_fp) as avg_fp_per_90,
 	p.stdev_base_fp,
-        em.expected_minutes,
+        pm.expected_minutes,
+	pm.avg_minutes_last_5,
+	pm.avg_minutes_before,
+	pm.role_label,
+	pm.minutes_trend,
 
         coalesce(o.avg_delta_vs_opponent, 0) as opponent_delta_fp,
 
         -- Base projection
-        (p.avg_base_fp_per_90 * em.expected_minutes / 90)
+        (p.avg_base_fp_per_90 * pm.expected_minutes / 90)
             as projected_fp_base,
 
         -- Final projection
         /*(p.avg_base_fp_per_90 * em.expected_minutes / 90)
         + coalesce(o.avg_delta_vs_opponent, 0)
             as projected_fp_final,*/
-	(p.avg_base_fp_per_90 * em.expected_minutes / 90)
+	(p.avg_base_fp_per_90 * pm.expected_minutes / 90)
 	+ coalesce(o.avg_delta_vs_opponent, 0)
 	+ coalesce(cs.expected_cs_points, 0)
 	+ ((ega.fantasy_xg_raw * ega.opp_def_shrink_factor) * coalesce(w.pts_per_goal, 0))
@@ -352,7 +312,7 @@ final as (
         -- Confidence (sample-size driven)
         (
 	    ln(1 + p.matches_played)
-	    * (em.expected_minutes / 90.0)
+	    * (pm.expected_minutes / 90.0)
 	    * (1 / (1 + coalesce(p.stdev_base_fp, 0)))
 	)::numeric(6,3) as confidence_score,
 
@@ -362,8 +322,8 @@ final as (
         a.is_owned
 
     from player_baseline p
-    join expected_minutes em
-        on p.player_id = em.player_id
+    join player_minutes pm
+        on p.player_id = pm.player_id
     left join upcoming_fixture f
         on p.player_id = f.player_id
     left join opponent_adjustment o

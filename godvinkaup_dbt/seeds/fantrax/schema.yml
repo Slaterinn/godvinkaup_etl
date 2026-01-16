@@ -34,3 +34,14 @@ seeds:
         tests: [not_null]
       - name: points_per_unit
         tests: [not_null]
+  - name: fantrax_team_names
+    description: >
+      Team names with abbreviations.
+    config:
+      schema: landing
+      quote_columns: false
+    columns:
+      - name: team_short
+        tests: [not_null]
+      - name: team_name
+        tests: [not_null]
