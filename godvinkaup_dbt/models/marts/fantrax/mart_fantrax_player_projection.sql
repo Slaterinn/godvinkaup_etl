@@ -1,58 +1,32 @@
-
-with base_events as (
+with player_baseline as (
 
     select
         pe.player_id,
         pe.scoring_position,
         pe.team_short,
-	tn.team_name as team_full_name,
-        pe.event_id,
-        pe.event_date,
-        pe.fantasy_points,
-	pe.base_points,
-	pe.event_points,
-	pe.minutes_played
-    from {{ ref('int_fantrax_player_event_totals') }} pe
+        tn.team_name 			       as team_full_name,
+
+        pe.matches_played                      as matches_played,
+        pe.avg_fp                              as avg_fp,
+        pe.avg_base_fp                         as avg_base_fp,
+        pe.avg_bonus_fp                        as avg_bonus_fp,
+
+        pe.stdev_base_fp                       as stdev_base_fp,
+
+        pe.avg_fp_per_90                       as avg_fp_per_90,
+        pe.avg_base_fp_per_90                  as avg_base_fp_per_90,
+
+        pe.fp_last_5_avg                       as avg_fp_last_5,
+        pe.fp_last_10_avg                      as avg_fp_last_10,
+        pe.consistency_score                   as consistency_score,
+        pe.form_label                          as form_label,
+        pe.scoring_profile_label               as scoring_profile_label
+
+
+    from {{ ref('int_fantrax_player_form_metrics') }} pe
 	JOIN {{ ref('stg_fantrax_team_names') }} tn
-		ON pe.team_short = tn.team_short
-
+                ON pe.team_short = tn.team_short
 ),
-
--- -------------------------------------------------
--- Player baseline performance
--- -------------------------------------------------
-player_baseline as (
-
-    select
-        player_id,
-        scoring_position,
-        team_short,
-	team_full_name,
-
-        count(*)                            as matches_played,
-        avg(fantasy_points)                 as avg_fp,
-	avg(base_points)		    as avg_base_fp,
-	avg(event_points)		    as avg_bonus_fp,
-        avg(minutes_played)                 as avg_minutes,
-
-	stddev_samp(base_points)            as stdev_base_fp,
-
-        case
-            when sum(minutes_played) > 180
-            then avg(fantasy_points) / avg(minutes_played) * 90
-            else null
-        end                                 as avg_fp_per_90,
-
-        case
-            when sum(minutes_played) > 180
-            then avg(base_points) / avg(minutes_played) * 90
-            else null
-        end                              as avg_base_fp_per_90
-
-    from base_events
-    group by 1,2,3,4
-),
-
 -- -------------------------------------------------
 -- Expected minutes (simple & explainable)
 -- -------------------------------------------------
@@ -267,6 +241,12 @@ final as (
         p.avg_fp,
 	p.avg_base_fp,
 	p.avg_bonus_fp,
+
+	p.avg_fp_last_5,
+	p.avg_fp_last_10,
+	p.consistency_score,
+	p.form_label,
+	p.scoring_profile_label,
 
 	ega.opp_def_shrink_factor,
 

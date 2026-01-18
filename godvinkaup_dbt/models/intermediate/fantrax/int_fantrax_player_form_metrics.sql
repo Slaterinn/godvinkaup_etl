@@ -120,7 +120,12 @@ season as (
         case
             when nullif(sum(minutes_played), 0) is null then null
             else (sum(fantasy_points) / nullif(sum(minutes_played), 0)) * 90.0
-        end as avg_fp_per_90
+        end as avg_fp_per_90,
+
+        case
+            when nullif(sum(minutes_played), 0) is null then null
+            else (sum(base_points) / nullif(sum(minutes_played), 0)) * 90.0
+        end as avg_base_fp_per_90
 
     from events
     group by player_id
@@ -146,6 +151,7 @@ final as (
         s.avg_bonus_fp,
         s.stdev_base_fp,
         s.avg_fp_per_90,
+	s.avg_base_fp_per_90,
 
         -- Recent form (last 5 vs last 10)
         l.fp_last_5_avg,
