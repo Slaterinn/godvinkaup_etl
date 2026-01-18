@@ -106,7 +106,7 @@ season as (
     select
         player_id,
 
-        -- max(scoring_position) as scoring_position,  -- safe if stable; otherwise pick from latest
+        max(scoring_position) as scoring_position,  -- safe if stable; otherwise pick from latest
         max(team_short) as team_short,              -- same comment as above
 
         count(*) as matches_played,
@@ -130,7 +130,7 @@ final as (
 
     select
         l.player_id,
-
+	l.scoring_position,
         -- Prefer dimensional attributes from the latest record (less ambiguity)
         l.team_short,
 
