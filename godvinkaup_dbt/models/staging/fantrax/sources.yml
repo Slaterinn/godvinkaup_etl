@@ -11,3 +11,4 @@ sources:
       - name: fantrax_scoring_tiers
       - name: fantrax_player_list
       - name: fantrax_team_names
+      - name: fantrax_player_news
