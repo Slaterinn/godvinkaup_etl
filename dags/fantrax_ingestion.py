@@ -71,7 +71,7 @@ with DAG(
     default_args=default_args,
     description="Fantrax data ingestion to Postgres landing schema",
     start_date=datetime(2024, 1, 1),
-    schedule_interval="0 6 * * 1,4",  # Monday & Thursday at 06:00
+    schedule_interval="0 10 * * *",  # Monday & Thursday at 06:00
     catchup=False,
     tags=["fantrax", "sports"],
 ) as dag:

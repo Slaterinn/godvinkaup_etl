@@ -18,6 +18,7 @@ with player_baseline as (
 
         pe.fp_last_5_avg                       as avg_fp_last_5,
         pe.fp_last_10_avg                      as avg_fp_last_10,
+	pe.fp_last_5_per_90		       as avg_fp_last_5_per_90,
         pe.consistency_score                   as consistency_score,
         pe.form_label                          as form_label,
         pe.scoring_profile_label               as scoring_profile_label
@@ -225,7 +226,7 @@ expected_g_a as (
 -- -------------------------------------------------
 -- Final projection
 -- -------------------------------------------------
-final as (
+projection_base as (
 
     select
 	p.player_id,
@@ -260,9 +261,20 @@ final as (
 
         coalesce(o.avg_delta_vs_opponent, 0) as opponent_delta_fp,
 
+	greatest(
+            0.0,
+            least(
+                0.35,
+                (ln(1 + p.matches_played) / 5.0) * coalesce(p.consistency_score, 0.5)
+            )
+        ) as form_weight,
+
+        p.avg_base_fp_per_90,
+        p.avg_fp_last_5_per_90,
+
         -- Base projection
-        (p.avg_base_fp_per_90 * pm.expected_minutes / 90)
-            as projected_fp_base,
+        --(p.avg_base_fp_per_90 * pm.expected_minutes / 90)
+        --    as projected_fp_base,
 
         -- Final projection
         /*(p.avg_base_fp_per_90 * em.expected_minutes / 90)
@@ -282,7 +294,7 @@ final as (
 	    else 0
 	end as projected_clean_sheet_points,
 
-	-- xG / xA
+        -- xG / xA
 	ega.fantasy_xg_raw * ega.opp_def_shrink_factor as fantasy_xg,
 	ega.fantasy_xa_raw * ega.opp_def_shrink_factor as fantasy_xa,
 
@@ -320,6 +332,24 @@ final as (
 	on p.player_id = ega.player_id
     left join score_weights w
 	on w.position = p.scoring_position
+),
+
+final as (
+	select
+        *,
+        -- ✅ alias is now visible here
+        (
+            (1 - form_weight) * avg_base_fp_per_90
+          + form_weight * coalesce(avg_fp_last_5_per_90, avg_base_fp_per_90)
+        ) as blended_base_fp_per_90,
+
+        (
+	    (
+                (1 - form_weight) * avg_base_fp_per_90
+              + form_weight * coalesce(avg_fp_last_5_per_90, avg_base_fp_per_90)
+            ) * expected_minutes / 90.0) as projected_fp_base
+
+    from projection_base
 )
 
 select * from final
