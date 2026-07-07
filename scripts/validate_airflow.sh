@@ -1,15 +1,13 @@
-cat > scripts/validate_airflow.sh <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
 RUNTIME_DIR="${RUNTIME_DIR:-$HOME/docker/dbt-airflow}"
-
-if [ ! -d "$RUNTIME_DIR" ]; then
-  echo "Runtime directory not found: $RUNTIME_DIR"
-  exit 1
-fi
+AIRFLOW_SERVICE="${AIRFLOW_SERVICE:-airflow-scheduler}"
 
 cd "$RUNTIME_DIR"
 
-docker compose exec airflow-scheduler airflow dags list
-EOF
+echo "Validating Airflow DAGs using Docker Compose service: $AIRFLOW_SERVICE"
+
+docker compose exec "$AIRFLOW_SERVICE" airflow dags list
+
+echo "Airflow DAG validation completed."
