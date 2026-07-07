@@ -8,7 +8,7 @@ import unicodedata
 
 # Database connection
 connection = psycopg2.connect(
-    host='192.168.86.23',
+    host='192.168.86.226',
     port='5433',
     database='godvinkaup',
     user='postgres',
