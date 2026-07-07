@@ -1,0 +1,30 @@
+# Ignore everything at repository root
+/*
+
+# Keep repository metadata/config
+!.gitignore
+!README.md
+!Dockerfile
+!docker-compose.yml
+
+# Keep Airflow DAG source
+!dags/
+!dags/**
+
+# Keep dbt project source
+!godvinkaup_dbt/
+!godvinkaup_dbt/**
+
+# Ignore generated Python cache files anywhere
+**/__pycache__/
+**/*.py[cod]
+
+# Ignore dbt generated artifacts
+godvinkaup_dbt/target/
+godvinkaup_dbt/logs/
+godvinkaup_dbt/dbt_packages/
+
+# Ignore local env/secrets if they appear
+.env
+.env.*
+!.env.example

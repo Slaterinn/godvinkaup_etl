@@ -7,6 +7,7 @@ from scripts.fantrax.fantrax_players import load_fantrax_players
 from scripts.fantrax.fantrax_player_scores import load_fantrax_player_scores
 from scripts.fantrax.fantrax_player_minutes import load_fantrax_player_minutes
 from scripts.fantrax.fantrax_player_service import load_fantrax_player_service
+from scripts.fantrax.fantrax_player_news import run_fantrax_player_news_ingest
 
 # -------------------------------------------------------------------
 # Fantrax session auth (TEMPORARY)
@@ -116,8 +117,20 @@ with DAG(
             "headers": FANTRAX_HEADERS            # imported or defined in DAG
         }
     )
-# ----------------------------------------------------------------
+
+
+    ingest_player_news = PythonOperator(
+        task_id="fantrax_ingest_player_news",
+        python_callable=run_fantrax_player_news_ingest,
+        op_kwargs={
+            "league_id": "41hpiiy9mbujpnmu",
+            "cookies": FANTRAX_COOKIES,   # however you build them today
+            "headers": FANTRAX_HEADERS,
+            "postgres_conn_id": "postgres_godvinkaup"
+        }
+    )
+    # ----------------------------------------------------------------
     # Task dependencies
     # ----------------------------------------------------------------
 
-    league_table >> player_list >> load_scores >> load_minutes >> load_service
+    league_table >> player_list >> load_scores >> load_minutes >> load_service >> ingest_player_news
