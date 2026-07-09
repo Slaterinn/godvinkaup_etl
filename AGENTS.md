@@ -59,6 +59,29 @@ docker-compose.yml
 
 ---
 
+## Standard Development Commands
+
+AI agents should use the Makefile as the primary interface to the repository.
+
+Do **not** invoke helper scripts directly unless debugging those scripts.
+
+Preferred commands:
+
+| Task | Command |
+|------|---------|
+| Show available commands | `make help` |
+| Verify workstation | `make doctor` |
+| Validate project | `make validate` |
+| Validate Airflow | `make validate-airflow` |
+| Validate dbt | `make validate-dbt` |
+| Sync runtime repository | `make sync-runtime` |
+| Deploy | `make deploy` |
+| Show repository status | `make status` |
+| Check branch & changes | `make git-check` |
+| Clean cache files | `make clean` |
+
+---
+
 # Development Workflow
 
 Development always happens in:
@@ -220,6 +243,18 @@ When changing DAGs, ensure they import successfully and do not introduce schedul
 ## General
 
 If validation cannot be executed because the required environment is unavailable, clearly state that fact instead of claiming the change has been tested.
+
+---
+
+## Local Configuration
+
+The dbt connection profile is intentionally not stored in Git.
+
+Location:
+
+    ~/.dbt/profiles.yml
+
+If dbt cannot connect to the database, verify this file before debugging the project itself.
 
 ---
 
