@@ -100,7 +100,7 @@ def run():
     conn = pg_hook.get_conn()
 
     need_info_sql = """
-        SELECT wine_id, wine_name, link from 
+        SELECT wine_id, wine_name, link from
         (
         SELECT wines.id as wine_id, wines.name as wine_name, coalesce(links.link, wines.link) as link
         FROM landing.red_wines wines

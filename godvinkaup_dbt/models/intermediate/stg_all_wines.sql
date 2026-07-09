@@ -270,13 +270,13 @@ sante_wines AS (
             , 'Flaska' as container_type
             , first_sale_date
             , 'N/F' as taste_group
-            , CASE 
+            , CASE
                     WHEN type IN ('Freyðivín', 'Kampavín') THEN 'Sparkling Wine'
                     WHEN type = 'Rauðvín' THEN 'Red Wine'
                     WHEN type = 'Rósavín' THEN 'Rose'
                     WHEN type = 'Hvítvín' THEN 'White Wine'
                     ELSE type
-                END AS category 
+                END AS category
             , 'N/F' as food_pairing
             , producer
             , 0 as carbon_footprint
@@ -295,8 +295,8 @@ uva_wines AS (
             , size
             , 0 as abv
             , price
-            , case when country = 'USA' then 'bandaríkin' 
-		when country = 'Suður Afríka' then 'suðurafríka' 
+            , case when country = 'USA' then 'bandaríkin'
+		when country = 'Suður Afríka' then 'suðurafríka'
 		when country = 'Nýja Sjáland' then 'nýjasjáland' else country end as country
             , area
             , origin_district
@@ -305,7 +305,7 @@ uva_wines AS (
             , 'Flaska'
             , CAST(NULL AS DATE)
             , 'N/F'
-            , CASE 
+            , CASE
                             WHEN wine_type = 'Rauðvín' THEN 'Red Wine'
                             WHEN wine_type = 'Hvítvín' THEN 'White Wine'
                             WHEN wine_type = 'Rósavín' THEN 'Rose'

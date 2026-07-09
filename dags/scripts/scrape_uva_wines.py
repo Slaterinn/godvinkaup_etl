@@ -160,7 +160,7 @@ def run():
         cursor.execute(
             """
             INSERT INTO landing.uva_wines (
-                wine_id, name, price, producer, area, origin_district, origin_place, 
+                wine_id, name, price, producer, area, origin_district, origin_place,
                 country, wine_type, food_pairings, grapes, size, year, link, batch_id
             )
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)

@@ -38,3 +38,10 @@ godvinkaup_dbt/dbt_packages/
 .env
 .env.*
 !.env.example
+
+# Editor backup files
+*.save
+*.save.*
+*.bak
+*.tmp
+*~

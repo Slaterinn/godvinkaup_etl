@@ -69,7 +69,7 @@ def strip_html_tags(text):
 
 def recreate_staging_table(cursor) -> None:
     cursor.execute("""
-        DROP TABLE IF EXISTS landing.sante_wines CASCADE; 
+        DROP TABLE IF EXISTS landing.sante_wines CASCADE;
         CREATE UNLOGGED TABLE landing.sante_wines (
             id                      TEXT,
             name                    TEXT,
@@ -93,7 +93,7 @@ def recreate_staging_table(cursor) -> None:
 
 
 def insert_wines(connection, wines) -> None:
-    insert_query = """INSERT INTO landing.sante_wines 
+    insert_query = """INSERT INTO landing.sante_wines
     (id, name, produced_year, producer, type, price, size, available, product_url, image_url, first_sale_date, country, area, grapes, description, district, batch_date)
     VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 

@@ -18,7 +18,7 @@ def run():
 
     def recreate_staging_table(cursor) -> None:
         cursor.execute("""
-            DROP TABLE IF EXISTS landing.sparkling_wines CASCADE; 
+            DROP TABLE IF EXISTS landing.sparkling_wines CASCADE;
             CREATE UNLOGGED TABLE landing.sparkling_wines (
                 id                  TEXT,
                 name                TEXT,

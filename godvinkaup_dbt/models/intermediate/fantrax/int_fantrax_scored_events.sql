@@ -22,7 +22,7 @@ minutes as (
         event_id,
         minutes_played
     from {{ ref('stg_fantrax_player_minutes') }}
- 
+
 ),
 
 service as (
@@ -38,7 +38,7 @@ service as (
     from {{ ref('stg_fantrax_player_service') }}
 
 )
-select 
+select
     ss.player_id,
     ss.event_id,
     ss.team_short,

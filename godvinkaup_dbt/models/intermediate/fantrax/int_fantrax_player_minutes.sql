@@ -3,13 +3,13 @@
 -- All events joined with players
 -- -------------------------------------------------
 with team_events as (
-select 
+select
 	  ec.event_id
 	, ec.match_date as event_date
 	, pl.player_id
 	, pl.player_name
 	, pl.team
-from 
+from
 	{{ ref('int_fantrax_event_context') }} ec
 join 	{{ ref('stg_fantrax_player_list') }} pl on (ec.team = pl.team)
 ),
@@ -18,15 +18,15 @@ join 	{{ ref('stg_fantrax_player_list') }} pl on (ec.team = pl.team)
 -- Get all minutes
 -- -------------------------------------------------
 player_minutes_full as (
-select 
+select
 	  te.player_id
 	, te.player_name
 	, te.event_id
 	, te.event_date
 	, coalesce(pet.minutes_played, 0) as minutes_played
-from 
+from
 team_events te
-left join {{ ref('int_fantrax_player_event_totals') }} pet 
+left join {{ ref('int_fantrax_player_event_totals') }} pet
 	on  te.player_id = pet.player_id
 	and te.event_id = pet.event_id
 ),
@@ -59,7 +59,7 @@ from events_ordered
 group by player_id
 )
 
-select 
+select
 	  player_id
 	, avg_minutes_last_5
 	, avg_minutes_before

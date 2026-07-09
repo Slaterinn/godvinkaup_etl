@@ -54,4 +54,3 @@ select
     next_fixture_text
 
 from {{ source('landing', 'fantrax_player_list') }}
-
