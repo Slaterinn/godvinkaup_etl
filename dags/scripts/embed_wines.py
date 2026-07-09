@@ -1,14 +1,15 @@
-import os
+import uuid
+
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import Variable
 from openai import OpenAI
 from qdrant_client import QdrantClient
-from qdrant_client.http.models import PointStruct, VectorParams, Distance
+from qdrant_client.http.models import Distance, PointStruct, VectorParams
 from tqdm import tqdm
-import uuid
 
 BATCH_SIZE = 50
 QDRANT_COLLECTION_NAME = "wines_embeddings"
+
 
 def run():
     # Load environment variables from Airflow Variables
@@ -29,7 +30,7 @@ def run():
     )
 
     # Fetch wines to embed
-    hook = PostgresHook(postgres_conn_id='postgres_godvinkaup')
+    hook = PostgresHook(postgres_conn_id="postgres_godvinkaup")
     pg_conn = hook.get_conn()
     cursor = pg_conn.cursor()
 
@@ -52,8 +53,8 @@ def run():
             link_vivino,
             recommendation,
             image_url_use,
-	    rating,
-	    rating_count
+            rating,
+            rating_count
         FROM marts.wines_to_embed
         WHERE recommendation >= 0.5
     """)
@@ -69,10 +70,11 @@ def run():
 
     # Generate a test embedding to get dimensionality
     print("Generating sample embedding to detect dimensions...")
-    test_embed = openai_client.embeddings.create(
-        input=[texts[0]],
-        model="text-embedding-3-small"
-    ).data[0].embedding
+    test_embed = (
+        openai_client.embeddings.create(input=[texts[0]], model="text-embedding-3-small")
+        .data[0]
+        .embedding
+    )
     dimensions = len(test_embed)
     print(f"Detected embedding dimension: {dimensions}")
 
@@ -82,10 +84,7 @@ def run():
         print(f"Creating Qdrant collection: {QDRANT_COLLECTION_NAME}")
         qdrant_client.recreate_collection(
             collection_name=QDRANT_COLLECTION_NAME,
-            vectors_config=VectorParams(
-                size=dimensions,
-                distance=Distance.COSINE
-            )
+            vectors_config=VectorParams(size=dimensions, distance=Distance.COSINE),
         )
         print(f"Collection '{QDRANT_COLLECTION_NAME}' created.")
     else:
@@ -93,13 +92,12 @@ def run():
 
     # Embed and upsert in batches
     for i in tqdm(range(0, len(texts), BATCH_SIZE)):
-        batch_ids = ids[i:i + BATCH_SIZE]
-        batch_texts = texts[i:i + BATCH_SIZE]
-        batch_meta = metadata[i:i + BATCH_SIZE]
+        batch_ids = ids[i : i + BATCH_SIZE]
+        batch_texts = texts[i : i + BATCH_SIZE]
+        batch_meta = metadata[i : i + BATCH_SIZE]
 
         embeddings = openai_client.embeddings.create(
-            input=batch_texts,
-            model="text-embedding-3-small"
+            input=batch_texts, model="text-embedding-3-small"
         ).data
 
         points = [
@@ -125,15 +123,12 @@ def run():
                     "image_url": batch_meta[j][14],
                     "rating": batch_meta[j][15],
                     "rating_count": batch_meta[j][16],
-                }
+                },
             )
             for j in range(len(batch_ids))
         ]
 
         try:
-            qdrant_client.upsert(
-                collection_name=QDRANT_COLLECTION_NAME,
-                points=points
-            )
+            qdrant_client.upsert(collection_name=QDRANT_COLLECTION_NAME, points=points)
         except Exception as e:
             print(f"Qdrant upsert error: {e}")

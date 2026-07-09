@@ -21,11 +21,10 @@ import json
 import re
 import time
 from html import unescape
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import requests
 from airflow.hooks.postgres_hook import PostgresHook
-
 
 FANTRAX_REQ_URL = "https://www.fantrax.com/fxpa/req"
 
@@ -103,23 +102,24 @@ on conflict (player_id) do update set
 
 _TAG_RE = re.compile(r"<[^>]+>")
 
+
 def strip_html(s: str) -> str:
     """Remove HTML tags and unescape entities."""
     return unescape(_TAG_RE.sub("", s)).strip()
 
 
-def chunked(items: List[str], n: int) -> List[List[str]]:
-    return [items[i:i + n] for i in range(0, len(items), n)]
+def chunked(items: list[str], n: int) -> list[list[str]]:
+    return [items[i : i + n] for i in range(0, len(items), n)]
 
 
-def build_payload(player_ids: List[str], team_id: Optional[str] = None) -> str:
+def build_payload(player_ids: list[str], team_id: str | None = None) -> str:
     """
     Fantrax expects JSON string with msgs[].
     Include teamId only if provided (some setups require it).
     """
     msgs = []
     for pid in player_ids:
-        data_obj: Dict[str, Any] = {"playerId": pid}
+        data_obj: dict[str, Any] = {"playerId": pid}
         if team_id:
             data_obj["teamId"] = team_id
 
@@ -139,23 +139,25 @@ def build_payload(player_ids: List[str], team_id: Optional[str] = None) -> str:
 
 def fetch_fantasy_team_id(
     session: requests.Session,
-    params: Dict[str, str],
-    cookies: Dict[str, str],
-    headers: Dict[str, str],
-) -> Optional[str]:
+    params: dict[str, str],
+    cookies: dict[str, str],
+    headers: dict[str, str],
+) -> str | None:
     """
     Optional helper: getFantasyTeams once to retrieve a teamId, in case Fantrax
     requires teamId for getPlayerProfile in your league/session context.
     """
-    data = json.dumps({
-        "msgs": [{"method": "getFantasyTeams", "data": {}}],
-        "uiv": 3,
-        "dt": 1,
-        "at": 0,
-        "av": "0.0",
-        "tz": "Atlantic/Reykjavik",
-        "v": "179.0.1",
-    })
+    data = json.dumps(
+        {
+            "msgs": [{"method": "getFantasyTeams", "data": {}}],
+            "uiv": 3,
+            "dt": 1,
+            "at": 0,
+            "av": "0.0",
+            "tz": "Atlantic/Reykjavik",
+            "v": "179.0.1",
+        }
+    )
 
     r = session.post(
         FANTRAX_REQ_URL,
@@ -184,7 +186,9 @@ def fetch_fantasy_team_id(
     return None
 
 
-def extract_latest_news(profile_response: Dict[str, Any]) -> Tuple[Optional[str], Optional[str], Optional[str], Dict[str, Any]]:
+def extract_latest_news(
+    profile_response: dict[str, Any],
+) -> tuple[str | None, str | None, str | None, dict[str, Any]]:
     """
     Extract:
       data.sectionContent.OVERVIEW.latestNews.analysisText
@@ -219,7 +223,7 @@ def extract_latest_news(profile_response: Dict[str, Any]) -> Tuple[Optional[str]
     return analysis_text, news_text, news_updated_at, latest
 
 
-def extract_injury_info(profile_response: Dict[str, Any]) -> Tuple[bool, Optional[str], Any]:
+def extract_injury_info(profile_response: dict[str, Any]) -> tuple[bool, str | None, Any]:
     """
     Extract:
       data.sectionContent.OVERVIEW.injuryInfo.injuryMsgs
@@ -253,12 +257,12 @@ def extract_injury_info(profile_response: Dict[str, Any]) -> Tuple[bool, Optiona
 
 def fetch_profiles_batch(
     session: requests.Session,
-    params: Dict[str, str],
-    cookies: Dict[str, str],
-    headers: Dict[str, str],
-    player_ids: List[str],
-    team_id: Optional[str] = None,
-) -> Dict[str, Dict[str, Any]]:
+    params: dict[str, str],
+    cookies: dict[str, str],
+    headers: dict[str, str],
+    player_ids: list[str],
+    team_id: str | None = None,
+) -> dict[str, dict[str, Any]]:
     """
     Fetch getPlayerProfile for a batch of player_ids; parse latestNews + injuryInfo.
     Returns dict keyed by player_id.
@@ -276,7 +280,7 @@ def fetch_profiles_batch(
     j = r.json()
 
     responses = j.get("responses", [])
-    out: Dict[str, Dict[str, Any]] = {}
+    out: dict[str, dict[str, Any]] = {}
 
     # Typically responses align with msgs order; be defensive.
     for idx, pid in enumerate(player_ids):
@@ -304,7 +308,7 @@ def ensure_table(pg: PostgresHook) -> None:
     pg.run(CREATE_TABLE_SQL)
 
 
-def get_player_ids_from_db(pg: PostgresHook) -> List[str]:
+def get_player_ids_from_db(pg: PostgresHook) -> list[str]:
     """
     Adjust this query to your actual player list source.
 
@@ -319,7 +323,7 @@ def get_player_ids_from_db(pg: PostgresHook) -> List[str]:
     return [r[0] for r in rows]
 
 
-def upsert_rows(pg: PostgresHook, rows: List[Dict[str, Any]]) -> None:
+def upsert_rows(pg: PostgresHook, rows: list[dict[str, Any]]) -> None:
     """Batch upsert into Postgres."""
     with pg.get_conn() as conn:
         with conn.cursor() as cur:
@@ -331,10 +335,11 @@ def upsert_rows(pg: PostgresHook, rows: List[Dict[str, Any]]) -> None:
 # Main entrypoint
 # -------------------------
 
+
 def run_fantrax_player_news_ingest(
     league_id: str,
-    cookies: Dict[str, str],
-    headers: Dict[str, str],
+    cookies: dict[str, str],
+    headers: dict[str, str],
     postgres_conn_id: str = "postgres_godvinkaup",
 ) -> None:
     """
@@ -354,13 +359,13 @@ def run_fantrax_player_news_ingest(
     session = requests.Session()
 
     # Optional fallback teamId if Fantrax requires it
-    team_id: Optional[str] = None
+    team_id: str | None = None
     try:
         team_id = fetch_fantasy_team_id(session, params, cookies, headers)
     except Exception:
         team_id = None
 
-    buffer: List[Dict[str, Any]] = []
+    buffer: list[dict[str, Any]] = []
 
     for batch in chunked(player_ids, BATCH_SIZE):
         # First attempt without teamId; if it errors and we have teamId, retry.
@@ -368,7 +373,9 @@ def run_fantrax_player_news_ingest(
             batch_out = fetch_profiles_batch(session, params, cookies, headers, batch, team_id=None)
         except requests.HTTPError:
             if team_id:
-                batch_out = fetch_profiles_batch(session, params, cookies, headers, batch, team_id=team_id)
+                batch_out = fetch_profiles_batch(
+                    session, params, cookies, headers, batch, team_id=team_id
+                )
             else:
                 raise
 

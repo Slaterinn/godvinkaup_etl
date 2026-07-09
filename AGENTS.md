@@ -244,8 +244,6 @@ When changing DAGs, ensure they import successfully and do not introduce schedul
 
 If validation cannot be executed because the required environment is unavailable, clearly state that fact instead of claiming the change has been tested.
 
----
-
 ## Local Configuration
 
 The dbt connection profile is intentionally not stored in Git.
@@ -255,6 +253,14 @@ Location:
     ~/.dbt/profiles.yml
 
 If dbt cannot connect to the database, verify this file before debugging the project itself.
+
+## Code Quality
+
+Before committing code:
+
+1. make format
+2. make lint
+3. make validate
 
 ---
 

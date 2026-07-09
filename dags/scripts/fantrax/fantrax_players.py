@@ -1,11 +1,13 @@
 import json
 import logging
-import requests
 import re
+
+import requests
 from airflow.hooks.postgres_hook import PostgresHook
 
 LEAGUE_ID = "41hpiiy9mbujpnmu"
 FANTRAX_URL = "https://www.fantrax.com/fxpa/req"
+
 
 def parse_next_opponent(raw_text: str):
     """
@@ -19,13 +21,13 @@ def parse_next_opponent(raw_text: str):
         return None, None
 
     # Find all 2–4 letter uppercase tokens (team codes)
-    teams = re.findall(r'\b[A-Z]{2,4}\b', raw_text)
+    teams = re.findall(r"\b[A-Z]{2,4}\b", raw_text)
 
     if not teams:
         return None, None
 
     # Home/away: away if '@' appears anywhere
-    home_away = 'A' if '@' in raw_text else 'H'
+    home_away = "A" if "@" in raw_text else "H"
 
     # First team token is always the player's team opponent
     opponent = teams[0]
@@ -37,24 +39,26 @@ def load_fantrax_players(cookies: dict, headers: dict) -> None:
     log = logging.getLogger(__name__)
 
     payload = {
-        "msgs": [{
-            "method": "getPlayerStats",
-            "data": {
-                "leagueId": LEAGUE_ID,
-                "statusOrTeamFilter": "ALL",
-                "pageNumber": "1",
-                "positionOrGroup": "SOCCER_NON_GOALIE",
-                "miscDisplayType": "1",
-                "maxResultsPerPage": "1000"
+        "msgs": [
+            {
+                "method": "getPlayerStats",
+                "data": {
+                    "leagueId": LEAGUE_ID,
+                    "statusOrTeamFilter": "ALL",
+                    "pageNumber": "1",
+                    "positionOrGroup": "SOCCER_NON_GOALIE",
+                    "miscDisplayType": "1",
+                    "maxResultsPerPage": "1000",
+                },
             }
-        }],
+        ],
         "uiv": 3,
         "refUrl": f"https://www.fantrax.com/fantasy/league/{LEAGUE_ID}/players",
         "dt": 0,
         "at": 0,
         "av": "0.0",
         "tz": "Atlantic/Reykjavik",
-        "v": "177.2.1"
+        "v": "177.2.1",
     }
 
     resp = requests.post(
@@ -63,7 +67,7 @@ def load_fantrax_players(cookies: dict, headers: dict) -> None:
         cookies=cookies,
         headers=headers,
         data=json.dumps(payload),
-        timeout=30
+        timeout=30,
     )
 
     data = resp.json()
@@ -140,8 +144,8 @@ def load_fantrax_players(cookies: dict, headers: dict) -> None:
                 next_home_away,
                 next_fixture_text,
                 roster_status_code,
-                roster_status_label
-            )
+                roster_status_label,
+            ),
         )
 
     conn.commit()
