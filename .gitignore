@@ -51,3 +51,6 @@ godvinkaup_dbt/dbt_packages/
 !.github/**
 !.editorconfig
 !.pre-commit-config.yaml
+
+# Include toml
+!/pyproject.toml
