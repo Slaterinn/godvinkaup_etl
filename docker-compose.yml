@@ -60,7 +60,7 @@ x-airflow-common:
     DBT_LOG_PATH: /opt/airflow/dag_logs/dbt_logs
     DBT_PROFILES_DIR: /opt/airflow/.dbt
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    GITHUB_TOKEN: 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
+    GITHUB_TOKEN: ${GITHUB_TOKEN}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
