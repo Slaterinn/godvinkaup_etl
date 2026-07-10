@@ -45,3 +45,7 @@ godvinkaup_dbt/dbt_packages/
 *.bak
 *.tmp
 *~
+
+# Include github dir
+!.github/
+!.github/**
