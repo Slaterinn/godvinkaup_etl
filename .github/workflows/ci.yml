@@ -33,6 +33,11 @@ jobs:
           uv tool install "ruff==0.15.21"
           uv tool install "pre-commit==4.6.0"
 
+      - name: Show tool versions
+        run: |
+          ruff --version
+          pre-commit --version
+
       - name: Ruff format check
         run: ruff format --check .
 
