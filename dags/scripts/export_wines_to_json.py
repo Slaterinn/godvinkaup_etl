@@ -1,8 +1,9 @@
 # export_wines_to_json.py
 
 import json
-import os
+
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+
 
 def run():
     # Use the Airflow connection ID to get credentials
@@ -10,7 +11,7 @@ def run():
     conn = pg_hook.get_conn()
     cursor = conn.cursor()
 
-    query = '''SELECT * FROM marts.wines WHERE rating > 3.4'''
+    query = """SELECT * FROM marts.wines WHERE rating > 3.4"""
 
     cursor.execute(query)
     rows = cursor.fetchall()

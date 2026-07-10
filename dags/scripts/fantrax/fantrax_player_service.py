@@ -1,8 +1,8 @@
 # fantrax_player_service.py
-import json
-import time
 import datetime
+import json
 import logging
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
@@ -21,10 +21,20 @@ REQUEST_BACKOFF = 1.0  # seconds
 # Utilities: parse gameweek date range
 # --------------------------------------------------
 MONTH_MAP = {
-    'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4,
-    'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8,
-    'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+    "Jan": 1,
+    "Feb": 2,
+    "Mar": 3,
+    "Apr": 4,
+    "May": 5,
+    "Jun": 6,
+    "Jul": 7,
+    "Aug": 8,
+    "Sep": 9,
+    "Oct": 10,
+    "Nov": 11,
+    "Dec": 12,
 }
+
 
 def parse_date_range(gw_text):
     """
@@ -32,7 +42,7 @@ def parse_date_range(gw_text):
     Output: (start_date, end_date)
     """
     try:
-        inside = gw_text[gw_text.find("(") + 1: gw_text.rfind(")")]
+        inside = gw_text[gw_text.find("(") + 1 : gw_text.rfind(")")]
         start_str, end_str = [s.strip() for s in inside.split(" - ", 1)]
         sm, sd = start_str.split(" ")
         em, ed = end_str.split(" ")
@@ -43,10 +53,7 @@ def parse_date_range(gw_text):
         syear = 2025 if smn <= 6 else 2025
         eyear = 2025 if emn <= 6 else 2025
 
-        return (
-            datetime.date(syear, smn, sdn),
-            datetime.date(eyear, emn, edn)
-        )
+        return (datetime.date(syear, smn, sdn), datetime.date(eyear, emn, edn))
     except Exception:
         today = datetime.date.today()
         return today, today
@@ -59,20 +66,19 @@ def fetch_player_service(player_id, cookies, headers):
     params = {"leagueId": LEAGUE_ID}
 
     payload = {
-        "msgs": [{
-            "method": "getPlayerProfile",
-            "data": {
-                "playerId": player_id,
-                "tab": "TEAM_SERVICE_TIME"
+        "msgs": [
+            {
+                "method": "getPlayerProfile",
+                "data": {"playerId": player_id, "tab": "TEAM_SERVICE_TIME"},
             }
-        }],
+        ],
         "uiv": 3,
         "refUrl": f"https://www.fantrax.com/fantasy/league/{LEAGUE_ID}/players",
         "dt": 0,
         "at": 0,
         "av": "3.0",
         "tz": "Atlantic/Reykjavik",
-        "v": "177.2.1"
+        "v": "177.2.1",
     }
 
     last_exc = None
@@ -85,17 +91,15 @@ def fetch_player_service(player_id, cookies, headers):
                 headers=headers,
                 cookies=cookies,
                 data=json.dumps(payload),
-                timeout=30
+                timeout=30,
             )
             resp.raise_for_status()
 
             data = resp.json()
 
-            rows = (
-                data["responses"][0]["data"]
-                ["sectionContent"]["TEAM_SERVICE_TIME"]
-                ["tables"][0]["rows"]
-            )
+            rows = data["responses"][0]["data"]["sectionContent"]["TEAM_SERVICE_TIME"]["tables"][0][
+                "rows"
+            ]
 
             out = []
 
@@ -120,15 +124,17 @@ def fetch_player_service(player_id, cookies, headers):
                 status = cells[2].get("content")
                 position = cells[3].get("content")
 
-                out.append({
-                    "player_id": player_id,
-                    "gameweek": gameweek,
-                    "owner": owner,
-                    "status": status,
-                    "position": position,
-                    "gw_start_date": gw_start,
-                    "gw_end_date": gw_end
-                })
+                out.append(
+                    {
+                        "player_id": player_id,
+                        "gameweek": gameweek,
+                        "owner": owner,
+                        "status": status,
+                        "position": position,
+                        "gw_start_date": gw_start,
+                        "gw_end_date": gw_end,
+                    }
+                )
 
             return out
 
@@ -171,8 +177,7 @@ def load_fantrax_player_service(cookies, headers):
     # --------------------------------------------------
     with ThreadPoolExecutor(max_workers=WORKERS) as executor:
         futures = {
-            executor.submit(fetch_player_service, pid, cookies, headers): pid
-            for pid in players
+            executor.submit(fetch_player_service, pid, cookies, headers): pid for pid in players
         }
 
         for future in as_completed(futures):

@@ -2,8 +2,8 @@
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import requests
 
+import requests
 from airflow.hooks.postgres_hook import PostgresHook
 
 log = logging.getLogger(__name__)
@@ -12,20 +12,23 @@ FANTRAX_URL = "https://www.fantrax.com/fxpa/req"
 LEAGUE_ID = "41hpiiy9mbujpnmu"
 MAX_WORKERS = 10
 
+
 # --------------------------------------------------
 # Fetch one player's minutes
 # --------------------------------------------------
 def fetch_player_minutes(player_id, cookies, headers):
     params = {"leagueId": LEAGUE_ID}
     payload = {
-        "msgs": [{"method": "getPlayerProfile", "data": {"playerId": player_id, "tab": "GAME_LOG"}}],
+        "msgs": [
+            {"method": "getPlayerProfile", "data": {"playerId": player_id, "tab": "GAME_LOG"}}
+        ],
         "uiv": 3,
         "refUrl": f"https://www.fantrax.com/fantasy/league/{LEAGUE_ID}/players",
         "dt": 0,
         "at": 0,
         "av": "0.0",
         "tz": "Atlantic/Reykjavik",
-        "v": "177.2.1"
+        "v": "177.2.1",
     }
 
     try:
@@ -35,34 +38,33 @@ def fetch_player_minutes(player_id, cookies, headers):
             cookies=cookies,
             headers=headers,
             data=json.dumps(payload),
-            timeout=30
+            timeout=30,
         )
         resp.raise_for_status()
         data = resp.json()
 
-        rows = data['responses'][0]['data']['sectionContent']['GAME_LOG']['tables'][0]['rows']
+        rows = data["responses"][0]["data"]["sectionContent"]["GAME_LOG"]["tables"][0]["rows"]
         results = []
 
         for row in rows:
-            cells = row.get('cells', [])
-            event_id = cells[3].get('props', {}).get('eventId', None) if len(cells) > 3 else None
+            cells = row.get("cells", [])
+            event_id = cells[3].get("props", {}).get("eventId", None) if len(cells) > 3 else None
 
             try:
-                minutes = float(cells[6].get('content', 0)) if len(cells) > 6 else 0
+                minutes = float(cells[6].get("content", 0)) if len(cells) > 6 else 0
             except (ValueError, TypeError):
                 minutes = 0
 
-            results.append({
-                "player_id": player_id,
-                "event_id": event_id,
-                "minutes_played": minutes
-            })
+            results.append(
+                {"player_id": player_id, "event_id": event_id, "minutes_played": minutes}
+            )
 
         return results
 
     except Exception as e:
         log.error(f"Failed fetching minutes for player {player_id}: {e}")
         return []
+
 
 # --------------------------------------------------
 # Main Airflow entrypoint
@@ -90,7 +92,9 @@ def load_fantrax_player_minutes(cookies, headers):
     # Parallel fetch
     # --------------------------------------------------
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(fetch_player_minutes, pid, cookies, headers): pid for pid in players}
+        futures = {
+            executor.submit(fetch_player_minutes, pid, cookies, headers): pid for pid in players
+        }
         for future in as_completed(futures):
             pid = futures[future]
             try:

@@ -18,7 +18,7 @@ with base as (
 
 tiers as (
 
-    select 
+    select
         position,
         stat_key,
         min_value,
