@@ -30,8 +30,8 @@ jobs:
 
       - name: Install tools
         run: |
-          uv tool install ruff
-          uv tool install pre-commit
+          uv tool install "ruff==0.15.21"
+          uv tool install "pre-commit==4.6.0"
 
       - name: Ruff format check
         run: ruff format --check .
