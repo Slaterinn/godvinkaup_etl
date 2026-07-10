@@ -53,4 +53,4 @@ godvinkaup_dbt/dbt_packages/
 !.pre-commit-config.yaml
 
 # Include toml
-!/pyproject.toml
+!pyproject.toml
