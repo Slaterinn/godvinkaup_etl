@@ -46,6 +46,8 @@ godvinkaup_dbt/dbt_packages/
 *.tmp
 *~
 
-# Include github dir
+# Include github stuff
 !.github/
 !.github/**
+!.editorconfig
+!.pre-commit-config.yaml
